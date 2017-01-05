@@ -1,5 +1,6 @@
 # Awstats Docker
 
+[![Build Status](https://travis-ci.org/manics/docker-awstats.svg?branch=master)](https://travis-ci.org/manics/docker-awstats)
 
 Generate web server statistics using Awstats.
 The generation of Awstats statistics is decoupled from the Awstats web interface.

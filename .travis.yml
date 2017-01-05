@@ -1,0 +1,17 @@
+language: python
+services:
+  - docker
+
+before_script:
+  - echo '172.17.0.1 - - [01/Jan/2017:10:00:00 +0000] "GET /awstats/awstats.pl HTTP/1.1" 200 1135 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:50.0) Gecko/20100101 Firefox/50.0"' > access.log
+
+script:
+  - docker build -t test-awstats .
+  - docker run -v test-awstats-db:/var/lib/awstats -v $PWD/:/web-logs:ro test-awstats /web-logs/\*.log > awstats-1.log
+  - grep 'Found 0 old records' awstats-1.log
+  - grep 'Found 1 new qualified records' awstats-1.log
+  - docker run -v test-awstats-db:/var/lib/awstats -v $PWD/:/web-logs:ro test-awstats /web-logs/\*.log > awstats-2.log
+  - grep 'Found 1 old records' awstats-2.log
+  - grep 'Found 0 new qualified records' awstats-2.log
+  # docker run -v test-awstats-db:/var/lib/awstats -p 8080:8080 test-awstats
+  # curl --fail -L localhost:8080 | grep 'Statistics for localhost'
