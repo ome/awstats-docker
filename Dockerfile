@@ -5,6 +5,11 @@ RUN yum -y install epel-release && \
     yum -y install awstats httpd && \
     yum clean all
 
+RUN mkdir -p /opt/GeoIP && \
+    curl -L https://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz \
+        | gunzip -c - > /opt/GeoIP/GeoIP.dat && \
+    curl -L https://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz \
+        | gunzip -c - > /opt/GeoIP/GeoLiteCity.dat
 RUN useradd -M -d /var/lib/awstats awstats && \
     chown awstats:awstats /var/lib/awstats /etc/awstats /run/httpd
 
