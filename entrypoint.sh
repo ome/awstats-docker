@@ -2,33 +2,35 @@
 
 LOG_FILES="$@"
 
-if [ -z "${LOG_FILES}" ]; then
-    echo "ERROR: Logfiles required"
-    exit 2
-fi
-
 SITE_DOMAIN="localhost"
 
-sed -r \
-    -e "s%^LogFile=.*%LogFile=/dev/null%" \
-    -e "s/^SiteDomain=.*/SiteDomain=\"${SITE_DOMAIN}\"/" \
-    -e "s/^AllowFullYearView=.*/AllowFullYearView=3/" \
-    -e "s/^BuildReportFormat=.*/BuildReportFormat=xhtml/" \
-    /etc/awstats/awstats.model.conf > "/etc/awstats/awstats.${SITE_DOMAIN}.conf"
+if [ ! -e "/etc/awstats/awstats.${SITE_DOMAIN}.conf" ]; then
+    echo "Creating awstats.${SITE_DOMAIN}.conf"
+    sed -r \
+        -e "s%^LogFile=.*%LogFile=/dev/null%" \
+        -e "s/^SiteDomain=.*/SiteDomain=\"${SITE_DOMAIN}\"/" \
+        -e "s/^AllowFullYearView=.*/AllowFullYearView=3/" \
+        -e "s/^BuildReportFormat=.*/BuildReportFormat=xhtml/" \
+        /etc/awstats/awstats.model.conf > "/etc/awstats/awstats.${SITE_DOMAIN}.conf"
 
-#AllowToUpdateStatsFromBrowser=1
+    #    AllowToUpdateStatsFromBrowser=1
+fi
 
-# Update stats
-# See /usr/share/awstats/wwwroot/cgi-bin/awstats.pl --help
-/usr/share/awstats/wwwroot/cgi-bin/awstats.pl -config="${SITE_DOMAIN}" \
-    -update \
-    -showsteps \
-    -showcorrupted \
-    -showdropped \
-    -showunknownorigin \
-    -LogFile="/usr/share/awstats/tools/logresolvemerge.pl ${LOG_FILES} |"
+if [ -z "${LOG_FILES}" ]; then
+    echo "No log files provided, starting httpd awstats"
+    exec /usr/sbin/httpd -DFOREGROUND
+else
+    echo "Updating log statistics"
+    # See /usr/share/awstats/wwwroot/cgi-bin/awstats.pl --help
+    exec /usr/share/awstats/wwwroot/cgi-bin/awstats.pl \
+        -config="${SITE_DOMAIN}" \
+        -update \
+        -showsteps \
+        -showcorrupted \
+        -showdropped \
+        -showunknownorigin \
+        -LogFile="/usr/share/awstats/tools/logresolvemerge.pl ${LOG_FILES} |"
 
-#    -showdirectorigin \
-#    -output=x
-
-exec /usr/sbin/httpd -DFOREGROUND
+    #    -showdirectorigin \
+    #    -output=x
+fi
