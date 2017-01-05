@@ -34,4 +34,20 @@ The new logs must be [newer than the existing ones](http://www.awstats.org/docs/
 
     docker run -it --rm \
         -v /data/web-logs-new:/web-logs-new:ro -v awstats-db:/var/lib/awstats \
-        openmicroscopy/awstats '/web-logs-new/access.log-*.gz'
+        openmicroscopy/awstats '/web-logs-new/access.log-\*.gz'
+
+
+## Optional variables
+
+The following variables can be defined, see `entrypoint.pl` for defaults.
+- `SKIP_USER_AGENTS`: A space separated list of user agents, default `Travis Hudson`
+- `SKIP_HOSTS`: A space separated list of regex IP matches to be skipped, default are private IP ranges and some Travis IPs.
+- `SKIP_HOSTS_ADDITIONAL`: A space separated list of regex IP matches to be skipped in addition to the default `SKIP_HOSTS`
+  This is provided so that you can add additional regexs to the default `SKIP_HOSTS` instead of having to define the full set.
+
+For example
+
+    docker run -e SKIP_HOSTS_ADDITIONAL="^1\.1\.  ^2\.2\. " \
+        ... openmicroscopy/awstats ...
+
+will skip IPs matching `^1\.1\.` `^2\.2\.` in addition to the defaults.
