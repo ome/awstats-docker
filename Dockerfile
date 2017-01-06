@@ -23,7 +23,7 @@ RUN \
         -e 's!^(\s*ErrorLog)\s+\S+!\1 /proc/self/fd/2!g' \
         -e 's!^(\s*Listen)\s+\S+!\1 8080!g' \
         /etc/httpd/conf/httpd.conf && \
-    echo "RedirectMatch ^/$ /awstats/awstats.pl" > /etc/httpd/conf.d/welcome.conf
+    echo "RedirectMatch ^/$ /awstats/awstats.pl?config=localhost" > /etc/httpd/conf.d/welcome.conf
 COPY entrypoint.pl /
 
 USER awstats
