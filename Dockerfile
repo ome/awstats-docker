@@ -11,7 +11,8 @@ RUN mkdir -p /opt/GeoIP && \
     curl -L https://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz \
         | gunzip -c - > /opt/GeoIP/GeoLiteCity.dat
 RUN useradd -M -d /var/lib/awstats awstats && \
-    chown awstats:awstats /var/lib/awstats /etc/awstats /run/httpd
+    chown awstats:awstats /var/lib/awstats /etc/awstats /run/httpd && \
+    bash -O extglob -c 'rm /etc/awstats/!(awstats.model.conf)'
 
 # Log to stdout/stderr, copied from
 # https://github.com/docker-library/httpd/blob/0e4a0b59e1f4e2a5a14ca197516beb2d4df1ffb8/2.4/alpine/Dockerfile#L78
