@@ -18,13 +18,12 @@ Generate web log statistics in `awstats-db`.
 The names of the log files to be processed should be passed as command line arguments, wildcards will be expanded.
 For example, if the web logs are `/data/web-logs/access.log-*.gz`:
 
-    docker run -it --rm \
-        -v /data/web-logs:/web-logs:ro -v awstats-db:/var/lib/awstats \
+    docker run --rm -v /data/web-logs:/web-logs:ro -v awstats-db:/var/lib/awstats \
         openmicroscopy/awstats /web-logs/access.log-\*.gz
 
 Run the Awstats web interface by passing no arguments:
 
-    docker run -it --rm -p 8080:8080 -v awstats-db:/var/lib/awstats openmicroscopy/awstats
+    docker run --rm -p 8080:8080 -v awstats-db:/var/lib/awstats openmicroscopy/awstats
 
 Awstats should now be accessible at http://localhost:8080.
 Apache authentication is not enabled.
@@ -32,14 +31,16 @@ Apache authentication is not enabled.
 You can update the web log statistics in `awstats-db` by re-running with the new log files (Awstats will automatically skip duplicate entries, for example if you pass a log file that has already been processed).
 The new logs must be [newer than the existing ones](http://www.awstats.org/docs/awstats_faq.html#OLDLOG):
 
-    docker run -it --rm \
-        -v /data/web-logs-new:/web-logs-new:ro -v awstats-db:/var/lib/awstats \
+    docker run --rm -v /data/web-logs-new:/web-logs-new:ro -v awstats-db:/var/lib/awstats \
         openmicroscopy/awstats '/web-logs-new/access.log-\*.gz'
 
 
-## Optional variables
+## Configuration
 
-The following variables can be defined, see `entrypoint.pl` for defaults.
+The configuration file `/etc/awstats/awstats.SITE_DOMAIN.conf` will be automatically generated at runtime if it doesn't exist.
+The generated configuration can be modified using the following optional environment variables, see `entrypoint.pl` for defaults.
+- `SITE_DOMAIN`: The site domain, default `localhost`.
+  If you change this you must set the `config=` query parameter when using the web interface, e.g. http://localhost:8080/awstats/awstats.pl?config=SITE_DOMAIN (this is intended to support statistics for multiple domains)
 - `SKIP_USER_AGENTS`: A space separated list of user agents, default `Travis Hudson`
 - `SKIP_HOSTS`: A space separated list of regex IP matches to be skipped, default are private IP ranges and some Travis IPs.
 - `SKIP_HOSTS_ADDITIONAL`: A space separated list of regex IP matches to be skipped in addition to the default `SKIP_HOSTS`
@@ -51,3 +52,5 @@ For example
         ... openmicroscopy/awstats ...
 
 will skip IPs matching `^1\.1\.` `^2\.2\.` in addition to the defaults.
+
+Alternatively you can provide a full configuration by mounting `/etc/awstats` into the container.
