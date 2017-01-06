@@ -5,6 +5,11 @@ RUN yum -y install epel-release && \
     yum -y install awstats httpd && \
     yum clean all
 
+RUN mkdir -p /opt/GeoIP && \
+    curl -L https://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz \
+        | gunzip -c - > /opt/GeoIP/GeoIP.dat && \
+    curl -L https://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz \
+        | gunzip -c - > /opt/GeoIP/GeoLiteCity.dat
 RUN useradd -M -d /var/lib/awstats awstats && \
     chown awstats:awstats /var/lib/awstats /etc/awstats /run/httpd
 
@@ -18,7 +23,7 @@ RUN \
         -e 's!^(\s*Listen)\s+\S+!\1 8080!g' \
         /etc/httpd/conf/httpd.conf && \
     echo "RedirectMatch ^/$ /awstats/awstats.pl" > /etc/httpd/conf.d/welcome.conf
-COPY entrypoint.sh /
+COPY entrypoint.pl /
 
 USER awstats
 
@@ -27,4 +32,4 @@ EXPOSE 8080
 # Awstats database
 VOLUME ["/var/lib/awstats/"]
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.pl"]
