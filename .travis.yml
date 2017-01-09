@@ -10,12 +10,13 @@ before_script:
 script:
   - docker build -t test-awstats .
 
-  - docker run --rm -v test-awstats-db:/var/lib/awstats -v $PWD/:/web-logs:ro -e SKIP_HOSTS_ADDITIONAL="^1.1\." test-awstats /web-logs/\*.log > awstats-1.log
+  - docker run --rm -v test-awstats-db:/var/lib/awstats -v $PWD/:/web-logs:ro -e SKIP_HOSTS_ADDITIONAL="^1.1\." test-awstats /web-logs/access\*.log > awstats-1.log
   - grep 'Found 2 dropped records' awstats-1.log
   - grep 'Found 0 old records' awstats-1.log
   - grep 'Found 1 new qualified records' awstats-1.log
 
-  - docker run --rm -v test-awstats-db:/var/lib/awstats -v $PWD/:/web-logs:ro -e SKIP_HOSTS_ADDITIONAL="^1.1\." test-awstats /web-logs/\*.log > awstats-2.log
+  - docker run --rm -v test-awstats-db:/var/lib/awstats -v $PWD/:/web-logs:ro -e SKIP_HOSTS_ADDITIONAL="^1.1\." test-awstats /web-logs/access\*.log > awstats-2.log
+  - grep 'Found 0 dropped records' awstats-2.log
   - grep 'Found 3 old records' awstats-2.log
   - grep 'Found 0 new qualified records' awstats-2.log
 
