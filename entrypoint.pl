@@ -107,7 +107,11 @@ else {
 }
 
 
-if ($log_files) {
+if ($log_files eq 'httpd') {
+    print "Starting httpd awstats\n";
+    exec "/usr/sbin/httpd", "-DFOREGROUND";
+}
+else {
     print "Updating log statistics\n";
     # See /usr/share/awstats/wwwroot/cgi-bin/awstats.pl --help
     my @args = (
@@ -117,12 +121,14 @@ if ($log_files) {
         "-showsteps",
         "-showcorrupted",
         "-showdropped",
-        "-showunknownorigin",
-        "-LogFile=/usr/share/awstats/tools/logresolvemerge.pl $log_files |"
+        "-showunknownorigin"
     );
+    if ($log_files) {
+        # If using an external configuration file it may define LogFile
+        push @args, "-LogFile=/usr/share/awstats/tools/logresolvemerge.pl $log_files |"
+    }
+    else {
+        print "No logfiles on command line, using LogFile from $site_domain configuration file \n"
+    }
     exec @args;
-}
-else {
-    print "No log files provided, starting httpd awstats\n";
-    exec "/usr/sbin/httpd", "-DFOREGROUND";
 }
