@@ -21,9 +21,9 @@ For example, if the web logs are `/data/web-logs/access.log-*.gz`:
     docker run --rm -v /data/web-logs:/web-logs:ro -v awstats-db:/var/lib/awstats \
         openmicroscopy/awstats /web-logs/access.log-\*.gz
 
-Run the Awstats web interface by passing no arguments:
+Run the Awstats web interface by passing just `httpd` as an argument:
 
-    docker run --rm -p 8080:8080 -v awstats-db:/var/lib/awstats openmicroscopy/awstats
+    docker run --rm -p 8080:8080 -v awstats-db:/var/lib/awstats openmicroscopy/awstats httpd
 
 Awstats should now be accessible at http://localhost:8080.
 Apache authentication is not enabled.
@@ -54,3 +54,4 @@ For example
 will skip IPs matching `^1\.1\.` `^2\.2\.` in addition to the defaults.
 
 Alternatively you can provide a full configuration by mounting `/etc/awstats` into the container.
+If no logfiles are passed on the command line the `LogFile` configuration option will be used.
