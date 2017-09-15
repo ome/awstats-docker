@@ -17,6 +17,7 @@ sub aw_re_ip {
 
 my $log_files = join(' ', @ARGV);
 chomp($log_files);
+my $log_format = env_default('LOG_FORMAT', '');
 my $site_domain = env_default('SITE_DOMAIN', 'localhost');
 my $skip_user_agents = env_default('SKIP_USER_AGENTS', 'Travis Hudson');
 
@@ -74,6 +75,9 @@ else {
     while (<$IN>) {
         if (/^LogFile=/) {
             print $OUT "LogFile=/dev/null\n";
+        }
+        elsif ($log_format && /^LogFormat=/) {
+            print $OUT "LogFormat = $log_format\n";
         }
         elsif (/^SiteDomain=/) {
             print $OUT "SiteDomain=\"$site_domain\"\n";

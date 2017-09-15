@@ -45,6 +45,7 @@ The generated configuration can be modified using the following optional environ
 - `SKIP_HOSTS`: A space separated list of regex IP matches to be skipped, default are private IP ranges and some Travis IPs.
 - `SKIP_HOSTS_ADDITIONAL`: A space separated list of regex IP matches to be skipped in addition to the default `SKIP_HOSTS`
   This is provided so that you can add additional regexs to the default `SKIP_HOSTS` instead of having to define the full set.
+- `LOG_FORMAT`: Set the `LogFormat` value. If quotes are desired, they should be added by the caller: `-e LOG_FORMAT=\"...\"`
 
 For example
 
